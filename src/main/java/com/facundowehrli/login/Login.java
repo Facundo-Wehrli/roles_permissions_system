@@ -1,8 +1,14 @@
 package com.facundowehrli.login;
 
+import com.facundowehrli.login.gui.LoginScreen;
+
 public class Login {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+
+        LoginScreen login = new LoginScreen();
+        login.setVisible(true);
+        login.setLocationRelativeTo(null);
+
     }
 }
