@@ -5,11 +5,12 @@ import com.facundowehrli.login.logic.Controller;
 public class LoginScreen extends javax.swing.JFrame {
 
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoginScreen.class.getName());
-
+    //Create controller object but not initialize it yet
     Controller control = null;
 
     public LoginScreen() {
         initComponents();
+        //initialize controle object right after the gui components initialization
         control = new Controller();
 
     }
@@ -154,9 +155,9 @@ public class LoginScreen extends javax.swing.JFrame {
         // TODO add your handling code here:
         String user = txtUsername.getText();
         String password = txtPassword.getText();
-
+        //method to validate user credentials
         String message = control.validateUser(user, password);
-
+        //show a message after pressing login button
         txtMessage.setText(message);
     }//GEN-LAST:event_btnLoginActionPerformed
 
