@@ -18,9 +18,9 @@ public class Controller {
             //username validation if credentials are good show a welcome message if not show error message
             if (usu.getUserName().equals(user)) {
                 if (usu.getPassword().equals(password)) {
-                    message = "User and password valid. Werlcome!";
+                    return "User and password valid. Werlcome!";
                 } else {
-                    message = "Error! incorrect password";
+                    return "Error! incorrect password";
                 }
             } else {
                 message = "Error! user not found";
