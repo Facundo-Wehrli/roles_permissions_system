@@ -1,14 +1,17 @@
 package com.facundowehrli.login.gui;
 
+import com.facundowehrli.login.logic.Controller;
+
 public class LoginScreen extends javax.swing.JFrame {
-    
+
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(LoginScreen.class.getName());
 
-    /**
-     * Creates new form LoginScreen
-     */
+    Controller control = null;
+
     public LoginScreen() {
         initComponents();
+        control = new Controller();
+
     }
 
     /**
@@ -46,6 +49,11 @@ public class LoginScreen extends javax.swing.JFrame {
 
         btnLogin.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         btnLogin.setText("Login");
+        btnLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLoginActionPerformed(evt);
+            }
+        });
 
         btnClean.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         btnClean.setText("Clean");
@@ -139,8 +147,18 @@ public class LoginScreen extends javax.swing.JFrame {
         txtUsername.setText("");
         txtPassword.setText("");
         txtMessage.setText("");
-        
+
     }//GEN-LAST:event_btnCleanActionPerformed
+
+    private void btnLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLoginActionPerformed
+        // TODO add your handling code here:
+        String user = txtUsername.getText();
+        String password = txtPassword.getText();
+
+        String message = control.validateUser(user, password);
+
+        txtMessage.setText(message);
+    }//GEN-LAST:event_btnLoginActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
