@@ -1,25 +1,34 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package com.facundowehrli.login.persistence;
 
+import java.io.Serializable;
+import jakarta.persistence.Query;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
+import com.facundowehrli.login.logic.Rol;
 import com.facundowehrli.login.logic.User;
 import com.facundowehrli.login.persistence.exceptions.NonexistentEntityException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import java.io.Serializable;
-import jakarta.persistence.Query;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.persistence.Persistence;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Root;
 import java.util.List;
 
-
+/**
+ *
+ * @author Facu
+ */
 public class UserJpaController implements Serializable {
 
     public UserJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
-    public UserJpaController(){
+
+    public UserJpaController() {
         emf = Persistence.createEntityManagerFactory("loginPU");
     }
 
@@ -32,7 +41,16 @@ public class UserJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            Rol aRol = user.getaRol();
+            if (aRol != null) {
+                aRol = em.getReference(aRol.getClass(), aRol.getId());
+                user.setaRol(aRol);
+            }
             em.persist(user);
+            if (aRol != null) {
+                aRol.getUsersList().add(user);
+                aRol = em.merge(aRol);
+            }
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -46,7 +64,22 @@ public class UserJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
+            User persistentUser = em.find(User.class, user.getId());
+            Rol aRolOld = persistentUser.getaRol();
+            Rol aRolNew = user.getaRol();
+            if (aRolNew != null) {
+                aRolNew = em.getReference(aRolNew.getClass(), aRolNew.getId());
+                user.setaRol(aRolNew);
+            }
             user = em.merge(user);
+            if (aRolOld != null && !aRolOld.equals(aRolNew)) {
+                aRolOld.getUsersList().remove(user);
+                aRolOld = em.merge(aRolOld);
+            }
+            if (aRolNew != null && !aRolNew.equals(aRolOld)) {
+                aRolNew.getUsersList().add(user);
+                aRolNew = em.merge(aRolNew);
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
@@ -75,6 +108,11 @@ public class UserJpaController implements Serializable {
                 user.getId();
             } catch (EntityNotFoundException enfe) {
                 throw new NonexistentEntityException("The user with id " + id + " no longer exists.", enfe);
+            }
+            Rol aRol = user.getaRol();
+            if (aRol != null) {
+                aRol.getUsersList().remove(user);
+                aRol = em.merge(aRol);
             }
             em.remove(user);
             em.getTransaction().commit();
@@ -130,5 +168,5 @@ public class UserJpaController implements Serializable {
             em.close();
         }
     }
-    
+
 }
